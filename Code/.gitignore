@@ -1,0 +1,17 @@
+# Dataset and images
+data/
+*.nii
+*.nii.gz
+
+# Checkpoints and models
+checkpoints/
+experiments/
+runs/
+*.pt
+*.pth
+
+# Python environments
+__pycache__/
+*.pyc
+.env
+venv/
