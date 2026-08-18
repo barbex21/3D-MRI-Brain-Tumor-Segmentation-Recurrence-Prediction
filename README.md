@@ -13,6 +13,12 @@ Rather than relying on a fixed, predefined input, this project explores the inde
   1. **Single-Modality Baselines:** Training isolated models to map specific modalities to specific targets (e.g., assessing T1 for `et`, T1 for `necr`, T1ce for `et`, etc.).
   2. **Comparative Analysis:** Evaluating which individual slices yield the highest clinical accuracy and mitigate false positives (especially in challenging postoperative scenarios).
   3. **Multi-Modal Fusion:** Developing optimal combination strategies based on the best-performing individual sequences to maximize spatial and contextual feature extraction.
+ 
+## 💾 Dataset: RHUH-GBM
+This project utilizes the publicly available **RHUH-GBM** (Rennes University Hospital Glioblastoma) dataset from The Cancer Imaging Archive (TCIA).
+
+* **Source:** [RHUH-GBM Collection on TCIA](https://www.cancerimagingarchive.net/collection/rhuh-gbm/)
+* **Data Preparation:** To run this pipeline, download the dataset and place it in the `data/input/dataset` directory. The `01_dataset_index.py` script is designed to automatically parse the patient folders, extract the required NIfTI volumes, and generate the necessary training/validation/test splits.
 
 ## 🛠️ Tech Stack & Architecture
 * **Frameworks:** PyTorch, PyTorch Lightning, MONAI
