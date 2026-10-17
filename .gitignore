@@ -1,12 +1,24 @@
 # Private input data and patient-level tables
 data/
 clinical*.csv
+clinical*.tsv
+clinical*.xls
+clinical*.xlsx
+patient*.csv
+patient*.tsv
+patient*.xls
+patient*.xlsx
 master_dataset*.csv
-dataset_manifest.csv
+master_dataset*.tsv
+master_dataset*.xls
+master_dataset*.xlsx
+dataset_manifest.*
+*manifest*.csv
 test_predictions.csv
 *.nii
 *.nii.gz
 *.dcm
+*.dicom
 
 # Generated runs and trained models
 experiments/
@@ -16,9 +28,17 @@ checkpoints/
 *.pth
 *.ckpt
 *.onnx
+*.safetensors
+*.h5
+*.hdf5
 
 # Local environments, credentials, and caches
 .env
+.env.*
+*.pem
+*.key
+credentials*.json
+secrets*.json
 .venv/
 venv/
 __pycache__/
@@ -30,4 +50,3 @@ __pycache__/
 .DS_Store
 Thumbs.db
 .vscode/
-
