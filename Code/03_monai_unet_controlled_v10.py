@@ -1,14 +1,14 @@
 """
-Canonical MONAI + PyTorch 3D U-Net baseline for GBM ET segmentation.
+Canonical MONAI + PyTorch 3D U-Net baseline for GBM ET/NECR segmentation.
 
 Usage example:
-    python 03_monai_unet_baseline.py ^
+    python Code/03_monai_unet_controlled_v10.py ^
       --master-csv data/master_dataset.csv ^
       --modalities t1 ^
       --epochs 50
 
 Smoke test:
-    python 03_monai_unet_baseline.py ^
+    python Code/03_monai_unet_controlled_v10.py ^
       --master-csv data/master_dataset.csv ^
       --modalities t1 ^
       --smoke-test
@@ -1441,7 +1441,7 @@ def parse_args() -> Config:
         "--controlled-training",
         action="store_true",
         help=(
-            "Controlled diagnostic: train only on ET-positive training volumes, "
+            "Controlled diagnostic: train only on target-positive training volumes, "
             "use positive-only crops, disable augmentation, and use the "
             "diagnostic optimizer."
         ),
@@ -1671,7 +1671,7 @@ def main() -> None:
         experiment_dir / "dataset_sanity_report.csv",
         index=False,
     )
-    
+
     report_empty_target_volumes(
         dataframe=master_dataframe,
         cfg=cfg,
@@ -1688,7 +1688,7 @@ def main() -> None:
         experiment_dir / "dataset_manifest.csv",
         index=False,
     )
-    
+
     train_dataframe = master_dataframe.loc[
         master_dataframe["split"] == "train"
     ].copy()
@@ -1705,9 +1705,17 @@ def main() -> None:
                 mask = np.asanyarray(
                     nib.load(str(row["mask_path"])).dataobj
                 )
+                if cfg.target_mask == "et":
+                    foreground_voxels = int((mask == cfg.label_et).sum())
+                elif cfg.target_mask == "necr":
+                    foreground_voxels = int((mask == cfg.label_necr).sum())
+                else:
+                    foreground_voxels = int(
+                        np.isin(mask, [cfg.label_et, cfg.label_necr]).sum()
+                    )
                 patient_max_foreground = max(
                     patient_max_foreground,
-                    int((mask == cfg.label_et).sum()),
+                    foreground_voxels,
                 )
 
             if patient_max_foreground > 0:
@@ -1742,8 +1750,8 @@ def main() -> None:
             f"{len(train_dataframe)} training volumes"
         )
         print(
-            "Selected training patients:",
-            sorted(selected_patient_ids),
+            "Selected training patient count:",
+            len(selected_patient_ids),
         )
 
     if cfg.controlled_training:
@@ -2101,7 +2109,7 @@ def main() -> None:
             device=device,
             epoch=epoch,
         )
-        
+
         if cfg.overfit_volumes:
             if overfit_eval_loader is None:
                 raise RuntimeError(
@@ -2223,7 +2231,7 @@ def main() -> None:
             experiment_dir / "training_history.csv",
             index=False,
         )
-        
+
         metric_name = (
             "overfit_dice"
             if cfg.overfit_volumes
@@ -2304,3 +2312,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

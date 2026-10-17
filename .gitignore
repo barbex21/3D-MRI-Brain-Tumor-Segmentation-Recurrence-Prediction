@@ -1,0 +1,33 @@
+# Private input data and patient-level tables
+data/
+clinical*.csv
+master_dataset*.csv
+dataset_manifest.csv
+test_predictions.csv
+*.nii
+*.nii.gz
+*.dcm
+
+# Generated runs and trained models
+experiments/
+runs/
+checkpoints/
+*.pt
+*.pth
+*.ckpt
+*.onnx
+
+# Local environments, credentials, and caches
+.env
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+.ipynb_checkpoints/
+*.log
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+
