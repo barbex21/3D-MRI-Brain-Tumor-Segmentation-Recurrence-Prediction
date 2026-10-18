@@ -4,7 +4,7 @@ This Valencia research project compares MRI input modalities for enhancing tumor
 
 ## Current experiment audit
 
-The audit contains 13 experiment rows: 10 are verified against paired `config.json` and `metrics.json` files, and 3 NECR rows are reconstructed from the aggregate summary. Two reconstructed thresholds are supported by individual reports; one is still unknown and left blank. Details and provenance are in [Results/experiment_audit.csv](Results/experiment_audit.csv) and [docs/data_dictionary.md](docs/data_dictionary.md).
+The audit contains 13 experiment rows: 10 are verified against paired `config.json` and `metrics.json` files, and 3 NECR rows are reconstructed from the aggregate summary. All 13 selected thresholds are now verified: 10 from metrics JSON, two from individual NECR reports, and the remaining NECR T1ce+T2 threshold (0.80) from the ET-vs-NECR comparison report. Details and provenance are in [Results/experiment_audit.csv](Results/experiment_audit.csv) and [docs/data_dictionary.md](docs/data_dictionary.md).
 
 The largest observed test Dice values in the current audit are ET: 0.6402 with T1ce+FLAIR, and NECR: 0.3770 with T1ce. These are descriptive results from the available runs, not confirmatory evidence that one modality generalizes better. See [docs/results_summary.md](docs/results_summary.md) for limitations.
 
