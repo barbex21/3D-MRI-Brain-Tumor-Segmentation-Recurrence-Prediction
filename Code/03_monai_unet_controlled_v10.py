@@ -32,6 +32,7 @@ import numpy as np
 import pandas as pd
 import torch
 import warnings
+import monai
 from monai.data import DataLoader, Dataset, list_data_collate
 from monai.inferers import sliding_window_inference
 from monai.losses import DiceCELoss
@@ -2283,6 +2284,15 @@ def main() -> None:
         "test_phase_summary": test_metrics.get("phase_summary", {}),
         "parameter_count": parameter_count,
         "device": str(device),
+        "runtime_environment": {
+            "python": sys.version.split()[0],
+            "torch": torch.__version__,
+            "cuda_runtime": torch.version.cuda,
+            "monai": monai.__version__,
+            "numpy": np.__version__,
+            "pandas": pd.__version__,
+            "nibabel": nib.__version__,
+        },
     }
 
     with (experiment_dir / "metrics.json").open(
