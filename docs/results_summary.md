@@ -15,7 +15,7 @@ The values are taken from individual run records. NECR has three additional rows
 
 - These are the largest observed test scores among the runs currently listed; selecting a model based on repeated comparisons of test scores would make the reported maximum optimistic.
 - The audit has no repeated seeds, confidence intervals, or paired statistical analysis.
-- Three NECR rows use summary values rounded to four decimal places, and one recovered threshold is unavailable.
+- Three NECR rows use summary values rounded to four decimal places; all selected thresholds are now supported by individual or comparison reports.
 - No independent external validation is included.
 - The scores do not establish clinical utility or generalization to another site, scanner, population, or preprocessing pipeline.
 
