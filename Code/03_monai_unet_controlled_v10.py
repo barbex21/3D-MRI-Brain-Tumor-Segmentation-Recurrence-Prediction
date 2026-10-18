@@ -304,13 +304,13 @@ def validate_requested_modalities(
 
     missing_files: list[str] = []
 
-    for _, row in dataframe.iterrows():
+    for record_index, (_, row) in enumerate(dataframe.iterrows(), start=1):
         for column in required_columns:
             path = Path(str(row[column]))
 
             if not path.is_file():
                 missing_files.append(
-                    f"{row['patient_id']} phase={row['phase_id']}: {path}"
+                    f"record {record_index}: missing {column}"
                 )
 
     if missing_files:
@@ -342,7 +342,7 @@ def validate_nifti_spatial_integrity(
     reports: list[dict[str, Any]] = []
     problems: list[str] = []
 
-    for _, row in dataframe.iterrows():
+    for record_index, (_, row) in enumerate(dataframe.iterrows(), start=1):
         patient_id = str(row["patient_id"])
         phase_id = str(row["phase_id"])
 
@@ -352,7 +352,7 @@ def validate_nifti_spatial_integrity(
 
         if mask_data.ndim != 3:
             problems.append(
-                f"{patient_id}, phase {phase_id}: mask is not 3D."
+                f"record {record_index}: mask is not 3D."
             )
             continue
 
@@ -360,7 +360,7 @@ def validate_nifti_spatial_integrity(
 
         if not mask_labels.issubset(allowed_labels):
             problems.append(
-                f"{patient_id}, phase {phase_id}: unsupported labels "
+                f"record {record_index}: unsupported labels "
                 f"{sorted(mask_labels - allowed_labels)}."
             )
 
@@ -371,25 +371,25 @@ def validate_nifti_spatial_integrity(
 
             if image_data.ndim != 3:
                 problems.append(
-                    f"{patient_id}, phase {phase_id}, {modality}: image is not 3D."
+                    f"record {record_index}, {modality}: image is not 3D."
                 )
                 continue
 
             if image_nii.shape != mask_nii.shape:
                 problems.append(
-                    f"{patient_id}, phase {phase_id}, {modality}: "
+                    f"record {record_index}, {modality}: "
                     f"image shape {image_nii.shape} != mask shape {mask_nii.shape}."
                 )
 
             if not close_affine(image_nii.affine, mask_nii.affine):
                 problems.append(
-                    f"{patient_id}, phase {phase_id}, {modality}: "
+                    f"record {record_index}, {modality}: "
                     "image/mask affines differ."
                 )
 
             if not np.isfinite(image_data).all():
                 problems.append(
-                    f"{patient_id}, phase {phase_id}, {modality}: "
+                    f"record {record_index}, {modality}: "
                     "image contains NaN or Inf."
                 )
 
@@ -691,8 +691,8 @@ def patch_statistics(
     This function DOES NOT train the model.
     It only inspects patches produced by the training DataLoader.
 
-    In addition to foreground statistics, it reports which
-    patient/phase combinations produced empty patches.
+    Empty patches are reported as aggregate counts by phase category.
+    Patient identifiers are excluded from diagnostic output.
     """
 
     foreground_counts: list[int] = []
@@ -716,31 +716,13 @@ def patch_statistics(
             checked += 1
 
             if foreground_voxels == 0:
-                patient_id = (
-                    str(patient_ids[index])
-                    if patient_ids is not None
-                    else "unknown"
-                )
-
-                phase_id = (
-                    str(phase_ids[index])
-                    if phase_ids is not None
-                    else "unknown"
-                )
-
                 phase_name = (
                     str(phase_names[index])
                     if phase_names is not None
                     else "unknown"
                 )
 
-                zero_foreground_records.append(
-                    {
-                        "patient_id": patient_id,
-                        "phase_id": phase_id,
-                        "phase_name": phase_name,
-                    }
-                )
+                zero_foreground_records.append({"phase_name": phase_name})
 
             if checked >= limit:
                 break
@@ -798,17 +780,13 @@ def patch_statistics(
     max_foreground = int(np.max(foreground_counts))
 
     # --------------------------------------------------------------
-    # Zero-foreground patient/phase summary
+    # Aggregate zero-foreground counts by phase category
     # --------------------------------------------------------------
 
     zero_summary: dict[str, int] = {}
 
     for record in zero_foreground_records:
-        key = (
-            f"{record['patient_id']} | "
-            f"{record['phase_id']} | "
-            f"{record['phase_name']}"
-        )
+        key = record["phase_name"]
 
         zero_summary[key] = zero_summary.get(key, 0) + 1
 
