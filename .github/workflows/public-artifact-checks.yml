@@ -1,0 +1,24 @@
+name: Public artifact checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check Python syntax
+        run: python -m py_compile Code/03_monai_unet_controlled_v10.py scripts/validate_public_artifacts.py
+      - name: Validate audit and public file set
+        run: python scripts/validate_public_artifacts.py
